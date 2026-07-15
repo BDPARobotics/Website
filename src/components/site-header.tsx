@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase/client";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -12,6 +14,9 @@ const NAV_LINKS = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [authed, setAuthed] = useState(false);
+
+  useEffect(() => onAuthStateChanged(getFirebaseAuth(), (u) => setAuthed(!!u)), []);
 
   return (
     <header className="bg-tertiary sticky top-0 z-50">
@@ -41,18 +46,29 @@ export function SiteHeader() {
         </ul>
 
         <div className="hidden items-center gap-3 xl:flex">
-          <Link
-            href="/login"
-            className="rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
-          >
-            Log In
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
-          >
-            Sign Up
-          </Link>
+          {authed ? (
+            <Link
+              href="/dashboard"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
+              >
+                Log In
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -97,20 +113,32 @@ export function SiteHeader() {
             ))}
           </ul>
           <div className="container mx-auto flex gap-3 px-4 pb-4 sm:px-6">
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="flex-1 rounded-md border border-primary px-4 py-2 text-center text-sm font-medium text-primary"
-            >
-              Log In
-            </Link>
-            <Link
-              href="/signup"
-              onClick={() => setOpen(false)}
-              className="flex-1 rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-white"
-            >
-              Sign Up
-            </Link>
+            {authed ? (
+              <Link
+                href="/dashboard"
+                onClick={() => setOpen(false)}
+                className="flex-1 rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-white"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className="flex-1 rounded-md border border-primary px-4 py-2 text-center text-sm font-medium text-primary"
+                >
+                  Log In
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setOpen(false)}
+                  className="flex-1 rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-white"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

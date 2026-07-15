@@ -4,6 +4,7 @@
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -53,7 +54,33 @@ export async function signInWithGoogle(profile?: NewUserProfile) {
   await establishSession(cred.user, profile);
 }
 
+// Swallows user-not-found so callers can show the same "check your inbox"
+// message either way — the form must not reveal which emails have accounts.
+export async function sendPasswordReset(email: string) {
+  try {
+    await sendPasswordResetEmail(getFirebaseAuth(), email);
+  } catch (err) {
+    const code = (err as { code?: string }).code;
+    if (code !== "auth/user-not-found") throw err;
+  }
+}
+
 export async function signOutUser() {
   await fetch("/api/auth/session", { method: "DELETE" });
   await signOut(getFirebaseAuth());
+}
+
+// Re-establish the server session cookie from Firebase's persisted browser
+// state — IndexedDB outlives the 14-day cookie, so returning users can skip
+// the form. Returns true when a fresh session cookie was minted.
+export async function restoreSession(): Promise<boolean> {
+  const auth = getFirebaseAuth();
+  await auth.authStateReady();
+  if (!auth.currentUser) return false;
+  try {
+    await establishSession(auth.currentUser);
+    return true;
+  } catch {
+    return false;
+  }
 }

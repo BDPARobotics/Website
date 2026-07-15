@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getSessionUser } from "@/lib/auth/session";
 import { BannerShapes } from "@/components/banner-shapes";
 
 const APPLY_URL = "https://form.jotform.com/251310814390044";
@@ -37,7 +39,9 @@ const CHALLENGES = [
   { name: "Operation", tagline: "Live teleoperation" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  // Signed-in students skip the marketing page and land on their dashboard.
+  if (await getSessionUser()) redirect("/dashboard");
   return (
     <>
       {/* Hero */}
