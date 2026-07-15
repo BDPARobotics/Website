@@ -117,6 +117,9 @@ export default function Home() {
             </div>
           ))}
         </div>
+        <p className="mt-6 text-center text-xl font-medium text-[#4a5568]">
+          Open to every American student. No experience required — just bring the drive.
+        </p>
       </section>
 
       {/* Photo mosaic */}

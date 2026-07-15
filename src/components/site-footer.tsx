@@ -21,8 +21,8 @@ export function SiteFooter() {
           >
             Black Data Processing Associates
           </a>
-          , empowering Black and Brown students with cutting-edge skills in
-          robotics.
+          . Open to every student — transforming underrepresented Americans
+          into top-tier Physical AI talent.
         </p>
         <p className="text-xs text-[#4a5568]">
           &copy; {year} BDPA Robotics. All rights reserved.

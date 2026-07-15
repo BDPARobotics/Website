@@ -44,20 +44,19 @@ export default function AboutPage() {
             </h1>
             <div className="mt-5 space-y-4 text-[#4a5568]">
               <p>
-                For more than 40 years, BDPA has enabled the upward mobility
-                of African Americans and other minorities in the Information
-                Technology (IT) and STEM fields. Through its 30+ local
-                community chapters in major cities across the United States,
-                BDPA has been at the forefront of promoting the minority
-                agenda within the IT profession since 1975.
+                For more than 40 years, BDPA has opened doors in Information
+                Technology and STEM — creating real upward mobility for
+                underrepresented Americans through 30+ local community
+                chapters in major cities across the United States since 1975.
               </p>
               <p>
                 Founded in 2023 with sponsorship from Johnson &amp; Johnson&rsquo;s
-                esteemed CIO Larry Jones, BDPA Robotics is driven by the noble
-                vision of cultivating an all-embracing community of Black
-                roboticists. Our heartfelt mission is to empower and nurture
-                individuals on their journey from the classroom to the
-                boardroom.
+                esteemed CIO Larry Jones, BDPA Robotics is open to every
+                American student, regardless of race or background. Our
+                mission is simple: transform underrepresented talent into
+                top-tier Physical AI engineers through cutting-edge lectures,
+                world-class mentorship, and hard competition — from the
+                classroom to the boardroom.
               </p>
             </div>
           </div>
