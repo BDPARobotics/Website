@@ -2,15 +2,36 @@ import type { Module } from "@/lib/types";
 
 // The RACC competition kit. Described at the level the curriculum teaches —
 // the tutor reasons from the student's own code rather than a made-up API.
+// Sourced from Hiwonder's official MaxArm curriculum (lesson code + kinematics
+// library), not the general event rule sheets, so these specifics are exact.
 export const MAXARM_REFERENCE = `
 The competition kit is the Hiwonder MaxArm: an open-source robot arm driven by an ESP32
 microcontroller. Students program it in Arduino C++ or MicroPython.
 Sensors wired to the ESP32: ultrasonic (distance), color, sound, and touch.
+
+Hardware model — get this right, it's a common source of student confusion:
+- 3 bus servos (serial, IDs 1-3) are solved together via inverse kinematics for a single
+  XYZ position: ID1 = base rotation, ID2/ID3 = the two arm-link angles. There is no wrist
+  joint — the IK solve controls position only, not end-effector orientation.
+- 1 separate PWM servo tilts the end effector. It is NOT part of the IK solve and is driven
+  directly (e.g. SetPWMServo(port, pulse, duration)).
+- The end effector is a VACUUM SUCTION NOZZLE (air pump + solenoid valve), not a mechanical
+  claw or gripper. Typical API: Pump_on() to grip (builds vacuum), Valve_on() then Valve_off()
+  to release (opens then closes the valve). If a student says "gripper" or "claw", they likely
+  mean the suction nozzle — gently correct the terminology.
+- Core movement call: set_position(pos[3], duration_ms) where pos = {x, y, z} in millimeters,
+  origin at the base center. Z is inverted: negative = up, positive = down. The arm cannot
+  reach z above ~255mm (down) or within ~50mm of the base horizontally (a dead zone directly
+  above the base) — "arm won't move" bugs are often the target position violating one of
+  these limits, not a code logic error.
+- Bus servos: BusServo.LobotSerialServoMove(id, pulse, duration_ms), pulse range 0-1000 (≈240°
+  of travel). PWM servo pulse range is roughly 500-2500µs (≈0-180°).
+
 Typical challenge work: pick-and-place on the challenge grid mat, stacking, sensor-triggered
 behaviors, and full autonomous or manually-controlled (teleoperated) sequences.
 Match whichever language the student is working in (Arduino C++ or MicroPython), and when
-debugging think about the physical realities: servo ranges, sensor wiring/pins, timing, and
-repeatability on the mat.`;
+debugging think about the physical realities: servo ranges and safety limits above, sensor
+wiring/pins, timing, and repeatability on the mat.`;
 
 export function buildTutorSystemPrompt(
   moduleDoc: Pick<Module, "title" | "type" | "aiContext">,

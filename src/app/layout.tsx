@@ -15,10 +15,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://bdparobotics.org"),
   title: {
     template: "%s | BDPA Robotics",
-    default: "BDPA Robotics",
+    default: "BDPA Robotics — Robot Arm Coding Competition & Academy",
   },
   description:
-    "BDPA Robotics empowers Black and Brown students with cutting-edge skills in robotics.",
+    "BDPA Robotics empowers Black and Brown students with cutting-edge robotics skills. Train on the MaxArm with an AI tutor, get mentor feedback, and compete in the Robot Arm Coding Competition. Fall 2026 applications close August 30.",
 };
 
 export default function RootLayout({
