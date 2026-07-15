@@ -130,7 +130,7 @@ export function Scene({
   playbackTimeMs: number;
 }) {
   return (
-    <div className="h-full w-full overflow-hidden rounded-lg bg-[#0f1420]">
+    <div className="h-[480px] w-full overflow-hidden rounded-lg bg-[#0f1420]">
       <Canvas camera={{ position: [4, 3, 4], fov: 45 }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 8, 5]} intensity={1} />

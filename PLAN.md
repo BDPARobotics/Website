@@ -95,12 +95,14 @@ notifications_log). Timestamps are epoch ms. IDs: `progress/{uid}_{moduleId}`,
   owner's inbox (dasilvakareem@gmail.com); then set EMAIL_FROM to a
   bdparobotics.org address. Remaining: badges (`lib/badges` checked inline
   from progress/submission routes), module-complete email.
-- [ ] **Phase 4 — Arm challenge.** Build order: URDF scene render → hardcoded
-  script playback + success-condition check → Web Worker sandbox running
-  student JS against the arm API (fixed tick loop, step budget) → autograder +
-  submission route → AI tutor wired to live code/results → arm badges.
-  Keep the sim in `src/sim/` with no DOM dependencies so it can later re-run
-  headless server-side to validate suspicious submissions.
+- [~] **Phase 4 — Arm challenge simulator (largely built July 15).** `src/sim/`
+  (kinematics mirroring the MaxArm's IK model, engine, autograder, Web Worker
+  sandbox — DOM-free for future server-side re-validation) plus
+  `src/components/arm-simulator/` (Three.js Scene, CodeEditor, playback,
+  ChallengeModuleBody wired into the student module page). Physical-kit
+  submissions (code + video → mentor review) shipped earlier and remain the
+  competition pathway; the simulator adds in-browser practice. Remaining:
+  polish, seed sim-enabled challenges, arm badges.
 - [x] **Content tooling (July 15 2026).** Admin file uploads to Firebase
   Storage (`/api/admin/uploads`, tokenized public URLs; PDF/PPT/PPTX/images/
   MP4) with Upload buttons in the module editor; inline DocViewer (native

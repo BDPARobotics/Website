@@ -4,7 +4,15 @@ import { useEffect, useRef, useState } from "react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-export function ModuleChat({ moduleId }: { moduleId: string }) {
+export function ModuleChat({
+  moduleId,
+  code,
+  lastResults,
+}: {
+  moduleId: string;
+  code?: string;
+  lastResults?: string;
+}) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -34,7 +42,7 @@ export function ModuleChat({ moduleId }: { moduleId: string }) {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ moduleId, message: text }),
+        body: JSON.stringify({ moduleId, message: text, code, lastResults }),
       });
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));

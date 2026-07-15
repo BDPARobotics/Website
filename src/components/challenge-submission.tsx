@@ -9,10 +9,18 @@ const LANGUAGE_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-export function ChallengeSubmission({ moduleId }: { moduleId: string }) {
+export function ChallengeSubmission({
+  moduleId,
+  prefillCode,
+  simulatorSummary,
+}: {
+  moduleId: string;
+  prefillCode?: string;
+  simulatorSummary?: string;
+}) {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [language, setLanguage] = useState("cpp");
-  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState(prefillCode ? "other" : "cpp");
+  const [code, setCode] = useState(prefillCode ?? "");
   const [notes, setNotes] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [busy, setBusy] = useState(false);
@@ -32,6 +40,17 @@ export function ChallengeSubmission({ moduleId }: { moduleId: string }) {
       .then((d) => setSubmissions(d.submissions ?? []))
       .catch(() => {});
   }, [moduleId]);
+
+  // Pull in whatever the student most recently tested in the simulator —
+  // it's just a convenience prefill, not authoritative (see submit()). Adjust
+  // state during render (React's recommended pattern for syncing from a
+  // changing prop) rather than in an effect, to avoid an extra render pass.
+  const [syncedPrefillCode, setSyncedPrefillCode] = useState(prefillCode);
+  if (prefillCode && prefillCode !== syncedPrefillCode) {
+    setSyncedPrefillCode(prefillCode);
+    setCode(prefillCode);
+    setLanguage("other");
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -61,6 +80,12 @@ export function ChallengeSubmission({ moduleId }: { moduleId: string }) {
       <p className="mt-1 text-sm text-gray-500">
         Paste the code you ran on your MaxArm. Add a video link so mentors can see your run.
       </p>
+      {simulatorSummary && (
+        <p className="mt-3 rounded-md bg-primary/5 px-3 py-2 text-sm text-primary">
+          Simulator result (not an official grade — a mentor still reviews every attempt):{" "}
+          {simulatorSummary}
+        </p>
+      )}
 
       <form onSubmit={submit} className="mt-4 space-y-3">
         <div className="flex flex-wrap gap-3">
