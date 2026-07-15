@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { BannerShapes } from "@/components/banner-shapes";
 
 export const metadata: Metadata = {
@@ -18,6 +19,24 @@ export default function RobotArmChallengePage() {
               We invite you to the BDPA Robotics Arm Challenge at our 45th
               BDPA Annual Conference.
             </h1>
+            <p className="mt-4 text-lg text-[#4a5568]">
+              Students: log in and program the arm in our 3D simulator — the
+              challenge is waiting on your dashboard.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Link
+                href="/dashboard"
+                className="rounded-md bg-primary px-8 py-4 text-lg font-bold text-white transition-colors hover:bg-primary-hover"
+              >
+                Enter the Challenge
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-md border-2 border-primary px-8 py-4 text-lg font-bold text-primary transition-colors hover:bg-primary hover:text-white"
+              >
+                Create Account
+              </Link>
+            </div>
           </div>
           <div className="flex justify-center">
             <Image
