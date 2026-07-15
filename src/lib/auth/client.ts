@@ -10,7 +10,7 @@ import {
   updateProfile,
   type User,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase/client";
+import { getFirebaseAuth } from "@/lib/firebase/client";
 
 type SessionResponse = { ok?: boolean; needsRefresh?: boolean; error?: string };
 type NewUserProfile = { chapterId: string | null; university: string | null };
@@ -38,22 +38,22 @@ export async function signUpWithEmail(
   password: string,
   profile: NewUserProfile,
 ) {
-  const cred = await createUserWithEmailAndPassword(auth, email, password);
+  const cred = await createUserWithEmailAndPassword(getFirebaseAuth(), email, password);
   await updateProfile(cred.user, { displayName });
   await establishSession(cred.user, profile);
 }
 
 export async function signInWithEmail(email: string, password: string) {
-  const cred = await signInWithEmailAndPassword(auth, email, password);
+  const cred = await signInWithEmailAndPassword(getFirebaseAuth(), email, password);
   await establishSession(cred.user);
 }
 
 export async function signInWithGoogle(profile?: NewUserProfile) {
-  const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+  const cred = await signInWithPopup(getFirebaseAuth(), new GoogleAuthProvider());
   await establishSession(cred.user, profile);
 }
 
 export async function signOutUser() {
   await fetch("/api/auth/session", { method: "DELETE" });
-  await signOut(auth);
+  await signOut(getFirebaseAuth());
 }

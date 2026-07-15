@@ -1,7 +1,7 @@
-import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 import type { Analytics } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -14,15 +14,32 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-export const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+// Lazy init, mirroring lib/firebase/admin.ts: these are client-only (auth,
+// browser Firestore/Storage). Initializing eagerly at module scope used to
+// run on the server too — a "use client" page still gets evaluated once for
+// SSR/build — which crashed the whole build (auth/invalid-api-key) if the
+// NEXT_PUBLIC_ env wasn't resolved in that context. Deferring to call time
+// means these only ever run from a browser event handler/effect.
+function firebaseApp(): FirebaseApp {
+  return getApps().length ? getApp() : initializeApp(firebaseConfig);
+}
+
+export function getFirebaseAuth(): Auth {
+  return getAuth(firebaseApp());
+}
+
+export function getFirebaseDb(): Firestore {
+  return getFirestore(firebaseApp());
+}
+
+export function getFirebaseStorage(): FirebaseStorage {
+  return getStorage(firebaseApp());
+}
 
 // Analytics is browser-only and not supported in all environments (SSR,
 // some in-app browsers). Call from a client component effect.
 export async function initAnalytics(): Promise<Analytics | null> {
   if (typeof window === "undefined") return null;
   const { getAnalytics, isSupported } = await import("firebase/analytics");
-  return (await isSupported()) ? getAnalytics(app) : null;
+  return (await isSupported()) ? getAnalytics(firebaseApp()) : null;
 }
