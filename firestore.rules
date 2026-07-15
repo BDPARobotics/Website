@@ -1,0 +1,75 @@
+rules_version = '2';
+
+// Client access is read-only, scoped by role. Every write goes through
+// Next.js route handlers using the Admin SDK, which bypasses these rules —
+// so `allow write: if false` everywhere is intentional, not an oversight.
+// Roles come from Firebase Auth custom claims (request.auth.token.role).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function userRole() {
+      return request.auth.token.get('role', 'student');
+    }
+    function isAdmin() {
+      return signedIn() && userRole() == 'admin';
+    }
+    function isMentor() {
+      return signedIn() && userRole() == 'mentor';
+    }
+    function myChapterId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.chapterId;
+    }
+
+    match /users/{uid} {
+      // Students read themselves; mentors read students in their chapter.
+      allow read: if signedIn()
+        && (request.auth.uid == uid
+            || isAdmin()
+            || (isMentor() && resource.data.chapterId == myChapterId()));
+      allow write: if false;
+    }
+
+    match /chapters/{chapterId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /courses/{courseId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /modules/{moduleId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /badges/{badgeId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    // Own progress only; mentor/admin dashboards read via API routes,
+    // where chapter scoping is enforced in code.
+    match /progress/{progressId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /chat_sessions/{sessionId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /submissions/{submissionId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /notifications_log/{id} {
+      allow read, write: if false;
+    }
+  }
+}

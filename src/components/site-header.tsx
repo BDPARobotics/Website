@@ -41,18 +41,18 @@ export function SiteHeader() {
         </ul>
 
         <div className="hidden items-center gap-3 xl:flex">
-          <a
-            href="https://moodle-134519-0.cloudclusters.net/login/index.php"
+          <Link
+            href="/login"
             className="rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
           >
             Log In
-          </a>
-          <a
-            href="https://moodle-134519-0.cloudclusters.net/login/signup.php"
+          </Link>
+          <Link
+            href="/signup"
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
           >
             Sign Up
-          </a>
+          </Link>
         </div>
 
         <button
@@ -97,18 +97,20 @@ export function SiteHeader() {
             ))}
           </ul>
           <div className="container mx-auto flex gap-3 px-4 pb-4 sm:px-6">
-            <a
-              href="https://moodle-134519-0.cloudclusters.net/login/index.php"
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
               className="flex-1 rounded-md border border-primary px-4 py-2 text-center text-sm font-medium text-primary"
             >
               Log In
-            </a>
-            <a
-              href="https://moodle-134519-0.cloudclusters.net/login/signup.php"
+            </Link>
+            <Link
+              href="/signup"
+              onClick={() => setOpen(false)}
               className="flex-1 rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-white"
             >
               Sign Up
-            </a>
+            </Link>
           </div>
         </div>
       )}
