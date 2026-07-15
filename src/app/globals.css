@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #1b3965;
+  --color-primary-hover: #14294a;
+  --color-tertiary: #fbfbfb;
+  --color-shape: #eaeaea;
+  --color-body: #4a5568;
+  --font-sans: var(--font-rubik);
+}
+
+body {
+  color: #233242;
+}
