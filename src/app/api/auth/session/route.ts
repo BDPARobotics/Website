@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb } from "@/lib/firebase/admin";
 import { clearSession, createSession } from "@/lib/auth/session";
+import { logNotification, sendEmail, welcomeEmail } from "@/lib/email";
 import type { UserDoc } from "@/lib/types";
 
 export async function POST(req: Request) {
@@ -26,11 +27,11 @@ export async function POST(req: Request) {
   // token and call again so the session cookie carries the claim.
   if (!decoded.role) {
     await adminAuth.setCustomUserClaims(decoded.uid, { role: "student" });
-    await ensureUserDoc(decoded.uid, decoded.name, decoded.email, profile);
+    await welcomeIfNew(decoded.uid, decoded.name, decoded.email, profile);
     return NextResponse.json({ needsRefresh: true });
   }
 
-  await ensureUserDoc(decoded.uid, decoded.name, decoded.email, profile);
+  await welcomeIfNew(decoded.uid, decoded.name, decoded.email, profile);
   await createSession(idToken);
   return NextResponse.json({ ok: true, role: decoded.role });
 }
@@ -40,15 +41,30 @@ export async function DELETE() {
   return NextResponse.json({ ok: true });
 }
 
-async function ensureUserDoc(
+// Creates the user doc on first sign-in and fires the welcome email exactly once.
+async function welcomeIfNew(
   uid: string,
   name?: string,
   email?: string,
   profile?: { chapterId: string | null; university: string | null },
 ) {
+  const created = await ensureUserDoc(uid, name, email, profile);
+  if (!created || !email) return;
+  const { subject, html } = welcomeEmail(name ?? email.split("@")[0]);
+  const result = await sendEmail({ to: email, subject, html });
+  if (result.id) await logNotification(uid, "welcome", result.id);
+  else console.error("welcome email failed:", result.error);
+}
+
+async function ensureUserDoc(
+  uid: string,
+  name?: string,
+  email?: string,
+  profile?: { chapterId: string | null; university: string | null },
+): Promise<boolean> {
   try {
     const ref = getAdminDb().collection("users").doc(uid);
-    if ((await ref.get()).exists) return;
+    if ((await ref.get()).exists) return false;
     const doc: UserDoc = {
       role: "student",
       chapterId: profile?.chapterId ?? null,
@@ -60,9 +76,11 @@ async function ensureUserDoc(
       createdAt: Date.now(),
     };
     await ref.set(doc);
+    return true;
   } catch (err) {
     // Auth still works if Firestore isn't provisioned yet; the doc gets
     // created on a later sign-in instead.
     console.error("ensureUserDoc failed:", err);
+    return false;
   }
 }

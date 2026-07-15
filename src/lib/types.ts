@@ -78,6 +78,7 @@ export interface SceneObject {
   shape: "cube" | "cylinder" | "sphere";
   position: [number, number, number];
   size: number;
+  color?: string; // for color-sensing challenges (getColor())
 }
 
 export interface TargetZone {
@@ -90,6 +91,9 @@ export interface SceneConfig {
   objects: SceneObject[];
   targetZones: TargetZone[];
   armStart: Record<string, number>; // joint name → degrees
+  // Fixed-mount ultrasonic sensor position (mm) — the real sensor is mounted
+  // on the mat, not on the moving end effector. Defaults to the base origin.
+  sensorOrigin?: [number, number, number];
 }
 
 export interface SolutionTest {
@@ -208,6 +212,49 @@ export interface Notification {
 
 export interface NotificationRead {
   lastReadAt: number;
+}
+
+// ---------- lectures/{lectureId} ----------
+
+export interface Lecture {
+  title: string;
+  description: string;
+  date: string; // YYYY-MM-DD
+  recordingUrl?: string; // YouTube/Zoom link or uploaded mp4
+  slidesUrl?: string; // uploaded PDF/PPTX deck
+  createdAt: number;
+}
+
+// ---------- winners/{winnerId} ----------
+
+export interface Winner {
+  year: number;
+  place: string; // "Champion", "1st Place", "Runner-Up"…
+  challenge?: string; // event, e.g. "Stack Em' Up"
+  teamName: string;
+  chapter?: string;
+  members?: string; // comma-separated names
+  photoUrl?: string;
+  description?: string;
+  createdAt: number;
+}
+
+// ---------- events/{eventId} ----------
+// Important dates admins push to the student homepage calendar — competition
+// days, registration deadlines, workshops, meetings.
+
+export const EVENT_TYPES = ["competition", "workshop", "deadline", "meeting", "other"] as const;
+export type EventType = (typeof EVENT_TYPES)[number];
+
+export interface CalendarEvent {
+  title: string;
+  description?: string;
+  date: string; // YYYY-MM-DD
+  time?: string; // free text, e.g. "6:00 PM ET" — no timezone math needed
+  location?: string;
+  link?: string;
+  type: EventType;
+  createdAt: number;
 }
 
 // ---------- notifications_log/{id} ----------

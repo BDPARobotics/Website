@@ -87,16 +87,28 @@ notifications_log). Timestamps are epoch ms. IDs: `progress/{uid}_{moduleId}`,
   code/lastResults from the client); 50 msgs/day/user cap in `ai_usage`.
   Chat panel lives in the student module view. Smoke-tested with a live
   Gemini call — context injection verified.
-- [ ] **Phase 3 — Badges + email.** `lib/badges` checked inline from
-  progress/submission routes. Resend: verify sending domain EARLY (DNS lag is
-  the usual blocker). Welcome + module-complete emails first. React Email
-  templates in `/emails`.
+- [ ] **Phase 3 — Badges + email.** Email HALF-DONE (July 15): Resend wired
+  via raw REST (`src/lib/email.ts`), welcome email fires on account creation,
+  admin mass-email broadcast on /admin/users (audience: all/students/mentors,
+  batch endpoint, per-recipient notifications_log). ⚠️ Until bdparobotics.org
+  is verified in Resend (Domains tab) sends only reach the Resend account
+  owner's inbox (dasilvakareem@gmail.com); then set EMAIL_FROM to a
+  bdparobotics.org address. Remaining: badges (`lib/badges` checked inline
+  from progress/submission routes), module-complete email.
 - [ ] **Phase 4 — Arm challenge.** Build order: URDF scene render → hardcoded
   script playback + success-condition check → Web Worker sandbox running
   student JS against the arm API (fixed tick loop, step budget) → autograder +
   submission route → AI tutor wired to live code/results → arm badges.
   Keep the sim in `src/sim/` with no DOM dependencies so it can later re-run
   headless server-side to validate suspicious submissions.
+- [x] **Content tooling (July 15 2026).** Admin file uploads to Firebase
+  Storage (`/api/admin/uploads`, tokenized public URLs; PDF/PPT/PPTX/images/
+  MP4) with Upload buttons in the module editor; inline DocViewer (native
+  iframe for PDF, Microsoft Office embed for PowerPoint) replacing the old
+  Open-PDF link; course edit form. **Lecture Library**: `lectures` collection
+  (title/date/description/recordingUrl/slidesUrl), admin CRUD at
+  /admin/lectures, student Lectures tab at /dashboard/lectures with detail
+  pages embedding YouTube recordings (or mp4/link fallback) and slide decks.
 - [ ] **Phase 5 — Scheduled email + leaderboard.** Vercel Cron: 5-day
   inactivity nudge, weekly digest. Challenge leaderboard.
 

@@ -2,6 +2,7 @@ import "server-only";
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
 import { getAuth, type Auth } from "firebase-admin/auth";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
 // Lazy init so builds and pages that never touch Firebase don't require the
 // service account key to be present.
@@ -23,4 +24,10 @@ export function getAdminAuth(): Auth {
 
 export function getAdminDb(): Firestore {
   return getFirestore(adminApp());
+}
+
+export function getAdminBucket() {
+  const name = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+  if (!name) throw new Error("NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET is not set");
+  return getStorage(adminApp()).bucket(name);
 }

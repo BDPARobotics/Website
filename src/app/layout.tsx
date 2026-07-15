@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     default: "BDPA Robotics — Robot Arm Coding Competition & Academy",
   },
   description:
-    "BDPA Robotics empowers Black and Brown students with cutting-edge robotics skills. Train on the MaxArm with an AI tutor, get mentor feedback, and compete in the Robot Arm Coding Competition. Fall 2026 applications close August 30.",
+    "BDPA Robotics trains Black and Brown students in Physical AI — programming robot arms that sense, decide, and act. Train on the MaxArm with an AI tutor, get mentor feedback, and compete in the Robot Arm Coding Competition. Now enrolling for the January 2027 cohort.",
 };
 
 export default function RootLayout({

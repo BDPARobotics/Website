@@ -5,18 +5,21 @@ import { getSessionUser } from "@/lib/auth/session";
 import { getNotificationsForUser } from "@/lib/notifications";
 import { SignOutButton } from "@/components/sign-out-button";
 import { DashboardTabs } from "@/components/dashboard-tabs";
-import type { Course, Module } from "@/lib/types";
+import { CalendarWidget } from "@/components/calendar-widget";
+import type { CalendarEvent, Course, Module } from "@/lib/types";
 
 export default async function DashboardPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
   const db = getAdminDb();
-  const [coursesSnap, { unreadCount }] = await Promise.all([
+  const [coursesSnap, eventsSnap, { unreadCount }] = await Promise.all([
     db.collection("courses").orderBy("order").get(),
+    db.collection("events").orderBy("date", "asc").get(),
     getNotificationsForUser(user.uid),
   ]);
   const courses = coursesSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Course) }));
+  const events = eventsSnap.docs.map((d) => ({ id: d.id, ...(d.data() as CalendarEvent) }));
 
   const modulesByCourse = new Map<string, (Module & { id: string })[]>();
   await Promise.all(
@@ -57,6 +60,8 @@ export default async function DashboardPage() {
       </div>
 
       <DashboardTabs active="courses" unreadCount={unreadCount} />
+
+      <CalendarWidget events={events} />
 
       <div className="mt-10 space-y-10">
         {courses.map((course) => {

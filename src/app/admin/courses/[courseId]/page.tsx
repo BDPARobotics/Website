@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { requireAdminPage } from "@/lib/auth/guards";
+import { CourseEditForm } from "@/components/admin/course-edit-form";
 import { DeleteButton } from "@/components/admin/delete-button";
 import { ModuleCreateForm } from "@/components/admin/module-create-form";
 import type { Course, Module } from "@/lib/types";
@@ -31,8 +32,18 @@ export default async function AdminCoursePage({
       <Link href="/admin/courses" className="text-sm text-gray-400 hover:text-primary">
         ← All courses
       </Link>
-      <h2 className="mt-2 text-xl font-semibold text-[#233242]">{course.title}</h2>
-      {course.description && <p className="mt-1 text-sm text-gray-500">{course.description}</p>}
+      <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-semibold text-[#233242]">{course.title}</h2>
+          {course.description && <p className="mt-1 text-sm text-gray-500">{course.description}</p>}
+        </div>
+        <CourseEditForm
+          courseId={courseId}
+          initialTitle={course.title}
+          initialDescription={course.description}
+          initialOrder={course.order}
+        />
+      </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div>

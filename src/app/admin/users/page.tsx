@@ -1,5 +1,6 @@
 import { getAdminDb } from "@/lib/firebase/admin";
 import { requireAdminPage } from "@/lib/auth/guards";
+import { BroadcastForm } from "@/components/admin/broadcast-form";
 import { RoleSelect } from "@/components/admin/role-select";
 import type { UserDoc } from "@/lib/types";
 
@@ -14,7 +15,9 @@ export default async function AdminUsersPage() {
   const users = snap.docs.map((d) => ({ uid: d.id, ...(d.data() as UserDoc) }));
 
   return (
-    <div className="overflow-x-auto">
+    <div>
+      <BroadcastForm />
+      <div className="overflow-x-auto">
       <table className="w-full min-w-[640px] text-left text-sm">
         <thead>
           <tr className="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
@@ -39,9 +42,10 @@ export default async function AdminUsersPage() {
           ))}
         </tbody>
       </table>
-      {users.length === 0 && (
-        <p className="py-10 text-center text-gray-500">No users yet.</p>
-      )}
+        {users.length === 0 && (
+          <p className="py-10 text-center text-gray-500">No users yet.</p>
+        )}
+      </div>
     </div>
   );
 }

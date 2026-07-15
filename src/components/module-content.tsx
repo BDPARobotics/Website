@@ -1,3 +1,4 @@
+import { DocViewer } from "@/components/doc-viewer";
 import type { ContentBlock } from "@/lib/types";
 
 export function ModuleContent({ blocks }: { blocks: ContentBlock[] }) {
@@ -43,16 +44,7 @@ function ContentBlockView({ block }: { block: ContentBlock }) {
     case "video":
       return <video src={block.url} controls className="w-full rounded-lg" />;
     case "pdf":
-      return (
-        <a
-          href={block.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-primary hover:border-primary"
-        >
-          Open PDF
-        </a>
-      );
+      return <DocViewer url={block.url} title="Module document" />;
     default:
       return null;
   }

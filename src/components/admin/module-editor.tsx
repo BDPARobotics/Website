@@ -41,6 +41,24 @@ export function ModuleEditor({ moduleId, initial }: { moduleId: string; initial:
   const [blocks, setBlocks] = useState<EditableBlock[]>(toEditable(initial.contentBlocks));
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+
+  async function uploadFile(i: number, file: File) {
+    setStatus(null);
+    setUploadingIndex(i);
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch("/api/admin/uploads", { method: "POST", body: form });
+    setUploadingIndex(null);
+    if (res.ok) {
+      const { url } = await res.json();
+      updateBlock(i, { url });
+      setStatus("File uploaded — remember to save the module.");
+    } else {
+      const data = await res.json().catch(() => ({}));
+      setStatus(`Upload failed: ${data.error ?? res.status}`);
+    }
+  }
 
   function updateBlock(i: number, patch: Partial<EditableBlock>) {
     setBlocks((bs) => bs.map((b, j) => (j === i ? { ...b, ...patch } : b)));
@@ -191,12 +209,38 @@ export function ModuleEditor({ moduleId, initial }: { moduleId: string; initial:
                   />
                 )}
                 {(b.type === "image" || b.type === "video" || b.type === "pdf") && (
-                  <input
-                    value={b.url}
-                    onChange={(e) => updateBlock(i, { url: e.target.value })}
-                    placeholder="https:// URL"
-                    className={inputCls}
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={b.url}
+                      onChange={(e) => updateBlock(i, { url: e.target.value })}
+                      placeholder="https:// URL — or upload a file"
+                      className={inputCls}
+                    />
+                    <label
+                      className={`shrink-0 cursor-pointer rounded-md border border-gray-300 px-3 py-2 text-sm text-[#233242] hover:border-primary ${
+                        uploadingIndex === i ? "opacity-60" : ""
+                      }`}
+                    >
+                      {uploadingIndex === i ? "Uploading…" : "Upload"}
+                      <input
+                        type="file"
+                        hidden
+                        disabled={uploadingIndex !== null}
+                        accept={
+                          b.type === "pdf"
+                            ? "application/pdf"
+                            : b.type === "video"
+                              ? "video/mp4"
+                              : "image/png,image/jpeg,image/gif,image/webp"
+                        }
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) uploadFile(i, f);
+                          e.target.value = "";
+                        }}
+                      />
+                    </label>
+                  </div>
                 )}
                 {b.type === "image" && (
                   <input

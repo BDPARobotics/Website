@@ -1,13 +1,9 @@
 import Link from "next/link";
 
-export function DashboardTabs({
-  active,
-  unreadCount,
-}: {
-  active: "courses" | "notifications";
-  unreadCount: number;
-}) {
-  const tabClass = (tab: "courses" | "notifications") =>
+type Tab = "courses" | "lectures" | "winners" | "notifications";
+
+export function DashboardTabs({ active, unreadCount }: { active: Tab; unreadCount: number }) {
+  const tabClass = (tab: Tab) =>
     `border-b-2 px-1 pb-2 text-sm font-medium transition-colors ${
       active === tab
         ? "border-primary text-primary"
@@ -18,6 +14,12 @@ export function DashboardTabs({
     <nav className="mt-8 flex gap-6 border-b border-gray-200">
       <Link href="/dashboard" className={tabClass("courses")}>
         Courses
+      </Link>
+      <Link href="/dashboard/lectures" className={tabClass("lectures")}>
+        Lectures
+      </Link>
+      <Link href="/dashboard/winners" className={tabClass("winners")}>
+        Past Winners
       </Link>
       <Link href="/dashboard/notifications" className={tabClass("notifications")}>
         Notifications

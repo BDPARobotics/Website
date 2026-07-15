@@ -19,9 +19,9 @@ const PLATFORM_FEATURES = [
     accent: "bg-[#51b56d]/20",
   },
   {
-    title: "Real competition hardware",
+    title: "Your first Physical AI system",
     description:
-      "Train on the Hiwonder MaxArm — an ESP32-powered robot arm with ultrasonic, color, sound, and touch sensors — in Arduino C++ or MicroPython.",
+      "The Hiwonder MaxArm senses the world through ultrasonic, color, sound, and touch — and acts on what it detects. You program the intelligence in Arduino C++ or MicroPython.",
     accent: "bg-[#917aeb]/20",
   },
   {
@@ -63,7 +63,7 @@ const STEPS = [
   {
     step: "1",
     title: "Apply",
-    description: "Fall applications are open now and close August 30, 2026.",
+    description: "Applications for the January 2027 cohort are open now.",
   },
   {
     step: "2",
@@ -123,30 +123,30 @@ export default function Home() {
         <div className="container relative mx-auto grid items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
           <div className="text-center lg:text-left">
             <p className="text-sm font-bold tracking-widest text-primary uppercase">
-              2026–27 Season · Robot Arm Coding Competition
+              2027 Season · Robot Arm Coding Competition
             </p>
             <h1 className="mt-4 text-4xl leading-tight font-bold text-[#233242] sm:text-5xl">
-              Learn robotics.
+              Learn Physical AI.
               <br />
               Command the arm.
               <br />
               <span className="text-primary">Compete.</span>
             </h1>
             <p className="mt-6 text-lg text-[#4a5568]">
-              BDPA Robotics empowers Black and Brown students with cutting-edge robotics
-              skills — now on an AI-powered academy platform built for the Robot Arm Coding
-              Competition.
+              AI is stepping off the screen and into the real world. BDPA Robotics trains
+              Black and Brown students in Physical AI — programming robot arms that sense,
+              decide, and act — all the way to the Robot Arm Coding Competition.
             </p>
             <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#51b56d]/15 px-4 py-1.5 text-sm font-medium text-[#2e7d46]">
               <span className="h-2 w-2 rounded-full bg-[#51b56d]" />
-              Fall applications open now — close August 30, 2026
+              Now enrolling — January 2027 cohort
             </div>
             <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
               <a
                 href={APPLY_URL}
                 className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
               >
-                Apply for Fall 2026
+                Apply for January 2027
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-4 w-4"
@@ -203,11 +203,13 @@ export default function Home() {
               New for 2026
             </p>
             <h2 className="mt-3 text-3xl font-bold text-[#233242]">
-              The BDPA Robotics Academy platform
+              Where Physical AI is learned by doing
             </h2>
             <p className="mt-4 text-[#4a5568]">
-              We replaced the old classroom portal with a platform built for how our students
-              actually train — code, submit, get feedback, repeat.
+              Physical AI is intelligence that acts in the real world — machines that sense
+              their surroundings, decide, and move. It&apos;s the fastest-growing frontier in
+              tech, and our academy platform teaches it the only way that sticks: code,
+              submit, get feedback, repeat.
             </p>
           </div>
           <div className="mt-12 grid gap-8 sm:grid-cols-2">
@@ -246,7 +248,8 @@ export default function Home() {
               Three events. One robot arm.
             </h2>
             <p className="mt-4 text-[#4a5568]">
-              Every Academy module builds toward the three official RACC challenge events.
+              Every Academy module builds toward the three official RACC challenge events —
+              Physical AI, proven on the competition mat.
             </p>
           </div>
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
@@ -331,17 +334,19 @@ export default function Home() {
       {/* Final CTA */}
       <section className="bg-primary py-16">
         <div className="container mx-auto px-4 text-center sm:px-6">
-          <h2 className="text-3xl font-bold text-white">The 2026–27 season starts now.</h2>
+          <h2 className="text-3xl font-bold text-white">
+            Join the generation building Physical AI.
+          </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/80">
-            Applications close August 30, 2026. Spots are limited — get your chapter
-            nomination in early.
+            The 2027 season starts in January and applications are open now. Spots are
+            limited — get your chapter nomination in early.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <a
               href={APPLY_URL}
               className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-gray-100"
             >
-              Apply for Fall 2026
+              Apply for January 2027
             </a>
             <Link
               href="/login"
