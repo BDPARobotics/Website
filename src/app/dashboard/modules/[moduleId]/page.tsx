@@ -2,8 +2,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { getSessionUser } from "@/lib/auth/session";
-import { ChallengeModuleBody } from "@/components/arm-simulator/ChallengeModuleBody";
-import { ChallengeSubmission } from "@/components/challenge-submission";
 import { MarkCompleteButton } from "@/components/mark-complete-button";
 import { ModuleChat } from "@/components/module-chat";
 import { ModuleContent } from "@/components/module-content";
@@ -50,23 +48,14 @@ export default async function StudentModulePage({
       </div>
 
       <div className="mt-8">
-        {module_.type === "arm_challenge" && module_.armChallenge ? (
-          <ChallengeModuleBody
-            moduleId={moduleId}
-            contentBlocks={module_.contentBlocks}
-            armChallenge={module_.armChallenge}
-          />
-        ) : (
-          <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-            <div>
-              <ModuleContent blocks={module_.contentBlocks} />
-              {module_.type === "arm_challenge" && <ChallengeSubmission moduleId={moduleId} />}
-            </div>
-            <aside className="lg:sticky lg:top-24 lg:self-start">
-              <ModuleChat moduleId={moduleId} />
-            </aside>
+        <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+          <div>
+            <ModuleContent blocks={module_.contentBlocks} />
           </div>
-        )}
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <ModuleChat moduleId={moduleId} />
+          </aside>
+        </div>
       </div>
     </main>
   );

@@ -20,8 +20,8 @@ export default function RobotArmChallengePage() {
               BDPA Annual Conference.
             </h1>
             <p className="mt-4 text-lg text-[#4a5568]">
-              Students: log in and program the arm in our 3D simulator — the
-              challenge is waiting on your dashboard.
+              Students: log in to read the challenge question and work through
+              it with your AI tutor — it&apos;s waiting on your dashboard.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Link

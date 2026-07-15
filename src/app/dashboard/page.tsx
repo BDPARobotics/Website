@@ -20,7 +20,7 @@ const BLOCK_LABELS: Record<ContentBlock["type"], string> = {
 
 function contentChips(m: ModuleWithId): string[] {
   const chips: string[] = [];
-  if (m.type === "arm_challenge") chips.push("3D Simulator");
+  if (m.type === "arm_challenge") chips.push("AI Tutor");
   for (const block of m.contentBlocks ?? []) {
     const label = BLOCK_LABELS[block.type];
     if (label && !chips.includes(label)) chips.push(label);
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
                 {nextChallenge.title}
               </h2>
               <p className="mt-2 max-w-xl text-sm text-white/70">
-                Write your code, hit Run, and watch the 3D simulated arm carry it out — right in
+                Read the challenge question and work through it with your AI tutor — right in
                 your browser.
               </p>
             </div>
