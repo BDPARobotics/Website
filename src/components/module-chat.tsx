@@ -71,7 +71,7 @@ export function ModuleChat({
   }
 
   return (
-    <div className="flex h-[520px] flex-col rounded-xl border border-gray-200 bg-white">
+    <div className="flex h-[calc(100vh-8rem)] min-h-[520px] flex-col rounded-xl border border-gray-200 bg-white">
       <div className="border-b border-gray-200 px-4 py-3">
         <p className="text-sm font-semibold text-[#233242]">AI Tutor</p>
         <p className="text-xs text-gray-400">Knows this module — ask anything about it</p>

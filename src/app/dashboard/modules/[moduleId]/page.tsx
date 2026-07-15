@@ -48,9 +48,18 @@ export default async function StudentModulePage({
       </div>
 
       <div className="mt-8">
-        <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+        <div className="grid gap-8 lg:grid-cols-[1fr_480px]">
           <div>
-            <ModuleContent blocks={module_.contentBlocks} />
+            <ModuleContent
+              blocks={
+                // Challenge modules show only the problem statement — sample
+                // code would give the solution away; students build it with
+                // the tutor instead.
+                module_.type === "arm_challenge"
+                  ? (module_.contentBlocks ?? []).filter((b) => b.type !== "code")
+                  : module_.contentBlocks
+              }
+            />
           </div>
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <ModuleChat moduleId={moduleId} />
