@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Content assets (module images, badge icons) are readable by signed-in
+// users; all uploads go through server routes with the Admin SDK.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}

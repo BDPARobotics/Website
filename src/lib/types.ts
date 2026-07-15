@@ -63,18 +63,13 @@ export interface Module {
   armChallenge?: ArmChallenge;
 }
 
-// ---------- arm challenge (simulates the physical SO-101 arm) ----------
+// ---------- arm challenge (the RACC kit: Hiwonder MaxArm on ESP32) ----------
 
-export const SO101_JOINTS = [
-  "shoulder_pan",
-  "shoulder_lift",
-  "elbow_flex",
-  "wrist_flex",
-  "wrist_roll",
-  "gripper",
-] as const;
+export const MAXARM_SENSORS = ["ultrasonic", "color", "sound", "touch"] as const;
+export type MaxArmSensor = (typeof MAXARM_SENSORS)[number];
 
-export type So101Joint = (typeof SO101_JOINTS)[number];
+export const SUBMISSION_LANGUAGES = ["cpp", "micropython", "other"] as const;
+export type SubmissionLanguage = (typeof SUBMISSION_LANGUAGES)[number];
 
 export type ArmChallengeDifficulty = "intro" | "intermediate" | "competition";
 
@@ -94,7 +89,7 @@ export interface TargetZone {
 export interface SceneConfig {
   objects: SceneObject[];
   targetZones: TargetZone[];
-  armStart: Partial<Record<So101Joint, number>>; // degrees
+  armStart: Record<string, number>; // joint name → degrees
 }
 
 export interface SolutionTest {
@@ -182,11 +177,37 @@ export interface Submission {
   uid: string;
   moduleId: string;
   attemptNum: number;
+  language: SubmissionLanguage;
   code: string;
-  results: TestResult[];
-  score: number;
-  passedAll: boolean;
+  notes?: string;
+  videoUrl?: string; // proof-of-run video for physical MaxArm challenges
+  status: "submitted" | "reviewed";
+  feedback?: string;
+  reviewedBy?: string;
+  reviewedAt?: number;
+  // Filled by the future simulator autograder; absent for physical-kit submissions.
+  results?: TestResult[];
+  score?: number;
+  passedAll?: boolean;
   submittedAt: number;
+}
+
+// ---------- notifications/{id} ----------
+// Announcements pushed by admins/mentors, shown in the student notification tab.
+
+export interface Notification {
+  title: string;
+  body: string;
+  link?: string;
+  createdBy: string;
+  createdAt: number;
+}
+
+// ---------- notification_reads/{uid} ----------
+// One doc per user: everything with createdAt <= lastReadAt is "read".
+
+export interface NotificationRead {
+  lastReadAt: number;
 }
 
 // ---------- notifications_log/{id} ----------

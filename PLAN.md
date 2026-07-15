@@ -24,14 +24,21 @@ autograder-tampering hole — the submission route is the only writer.
 cookie (`src/lib/auth/session.ts`). `role` lives in custom claims
 (student | mentor | admin). First admin gets bootstrapped by a one-off script.
 
-**The simulator arm is the SO-101.** We own the physical arm (`~/code/robot`,
-Python over scservo_sdk, URDF model available). The student-facing sim API
-uses the real joint names — `shoulder_pan`, `shoulder_lift`, `elbow_flex`,
-`wrist_flex`, `wrist_roll`, `gripper` (see `SO101_JOINTS` in
-`src/lib/types.ts`) — and the URDF drives the Three.js render (urdf-loader +
-React Three Fiber). Students practice in the browser on the same arm they'll
-run at the BDPACON Robot Arm Challenge. Joint limits/speeds come from the
-amplitudes in `~/code/robot/full_arm.py`.
+**The competition arm is the Hiwonder MaxArm** (confirmed by Kareem; it's in
+the seeded RACC curriculum): ESP32-based, programmed in Arduino C++ or
+MicroPython, with ultrasonic/color/sound/touch sensors. The AI tutor's
+hardware reference (`MAXARM_REFERENCE` in `src/lib/ai/prompts.ts`) and the
+future simulator target the MaxArm. Kareem's personal SO-101 (`~/code/robot`,
+URDF available) can return later as a second sim profile if useful.
+
+**Challenge submissions (shipped ahead of the simulator).** Students on
+`arm_challenge` modules submit the code they ran on the physical kit:
+language (C++/MicroPython), code, notes, optional proof-of-run video link →
+`submissions/{uid}_{moduleId}_{attemptNum}`. Mentors/admins review at
+`/admin/submissions` and leave feedback (status → reviewed); students see
+feedback on the module page. The tutor automatically reads the latest
+submission when chatting on a challenge module. Deleting a module cascades to
+its progress/chat_sessions/submissions (`src/lib/firebase/cascade.ts`).
 
 **AI tutor.** `POST /api/ai/chat`: verify session → load `modules.aiContext`
 (hand-written condensed summary, not raw content) + last N chat messages →
@@ -56,18 +63,30 @@ notifications_log). Timestamps are epoch ms. IDs: `progress/{uid}_{moduleId}`,
   `scripts/provision-firebase.mjs`; service account key in `.env.local`;
   Vercel project `bdpa-robotics` linked (GitHub BDPARobotics/Website connected)
   with all env vars in production/preview/development.
-  Remaining manual steps: create the default Firestore database in the console
-  (service account lacks permission), enable the Google sign-in provider,
-  then `npx firebase-tools deploy --only firestore:rules` and bootstrap the
-  first admin with `scripts/set-role.mjs`.
-- [ ] **Phase 1 — Content LMS.** Auth flow DONE: /signup (with chapter +
-  university), /login, Google button, session cookies, first-login role
-  bootstrap, /dashboard shell, header links point at /login + /signup instead
-  of Moodle. Remaining: admin CRUD for courses/modules (aiContext as a plain
-  textarea), student course/module views, `POST /api/progress` with inline
-  streak update.
-- [ ] **Phase 2 — AI tutor.** `/api/ai/chat` streaming route (Vercel AI SDK),
-  chat panel in module view, per-uid daily message cap.
+  Firestore + Storage enabled; rules for both deployed via the Firebase Rules
+  REST API (scripts couldn't use firebase-tools — the service account lacks
+  serviceusage perms; same reason composite indexes can't be deployed from
+  here, so queries sort in memory for now and firestore.indexes.json waits for
+  an owner-credentialed deploy). Admin bootstrapped: kareemdasilva@gmail.com.
+- [ ] **Phase 1 — Content LMS.** Auth DONE: /signup (chapter + university),
+  /login, Google button (provider enabled in console), session cookies,
+  first-login role bootstrap, /dashboard shell, header links point at /login +
+  /signup instead of Moodle. Admin mode DONE: /admin (role-gated layout +
+  overview counts), /admin/users (role management), /admin/courses +
+  /admin/modules CRUD with content-block editor and aiContext field; all
+  mutations behind admin-gated API routes; smoke-tested end-to-end against
+  live Firebase. Student views DONE (dashboard course list + module page with
+  content renderer, by the other agent). `POST /api/progress` DONE with inline
+  streak update + Mark-as-complete button.
+- [x] **Phase 2 — AI tutor.** Provider decision changed: **Gemini**
+  (GEMINI_API_KEY/GEMINI_MODEL env, default gemini-3.1-flash-lite) via raw REST
+  SSE — no SDK dependency (`src/lib/ai/gemini.ts`). `/api/ai/chat`: GET history,
+  POST streams the reply and persists to `chat_sessions/{uid}_{moduleId}`;
+  system prompt built from module aiContext (`src/lib/ai/prompts.ts`, includes
+  the SO-101 arm API reference for arm_challenge modules + optional live
+  code/lastResults from the client); 50 msgs/day/user cap in `ai_usage`.
+  Chat panel lives in the student module view. Smoke-tested with a live
+  Gemini call — context injection verified.
 - [ ] **Phase 3 — Badges + email.** `lib/badges` checked inline from
   progress/submission routes. Resend: verify sending domain EARLY (DNS lag is
   the usual blocker). Welcome + module-complete emails first. React Email

@@ -68,6 +68,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /notifications/{id} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /notification_reads/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
     match /notifications_log/{id} {
       allow read, write: if false;
     }
