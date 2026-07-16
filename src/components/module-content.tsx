@@ -1,4 +1,5 @@
 import { DocViewer } from "@/components/doc-viewer";
+import { Markdown } from "@/components/markdown";
 import type { ContentBlock } from "@/lib/types";
 
 export function ModuleContent({ blocks }: { blocks: ContentBlock[] }) {
@@ -15,12 +16,8 @@ function ContentBlockView({ block }: { block: ContentBlock }) {
   switch (block.type) {
     case "text":
       return (
-        <div className="space-y-3 text-[#233242]">
-          {block.content.split("\n\n").map((paragraph, i) => (
-            <p key={i} className="leading-relaxed whitespace-pre-line">
-              {paragraph}
-            </p>
-          ))}
+        <div className="text-[#233242]">
+          <Markdown text={block.content} />
         </div>
       );
     case "code":

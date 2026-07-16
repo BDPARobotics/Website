@@ -34,8 +34,8 @@ export default async function StudentModulePage({
   // of the viewport. 4.5rem ≈ the sticky site header.
   if (module_.type === "arm_challenge") {
     return (
-      <main className="flex h-[calc(100dvh-4.5rem)] flex-col">
-        <div className="container mx-auto w-full max-w-4xl px-4 pt-6 sm:px-6">
+      <main className="flex h-[calc(100dvh-4.5rem)] min-h-[560px] flex-col overflow-hidden">
+        <div className="container mx-auto w-full max-w-4xl shrink-0 px-4 pt-6 sm:px-6">
           <Link href="/dashboard" className="text-sm text-gray-400 hover:text-primary">
             ← {course?.title ?? "Dashboard"}
           </Link>
