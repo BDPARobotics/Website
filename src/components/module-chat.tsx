@@ -54,10 +54,14 @@ export function ModuleChat({
   moduleId,
   code,
   lastResults,
+  variant = "panel",
 }: {
   moduleId: string;
   code?: string;
   lastResults?: string;
+  // "panel" = bordered sidebar card; "full" = ChatGPT-style full-page chat
+  // that fills its parent and centers the conversation column.
+  variant?: "panel" | "full";
 }) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -125,44 +129,61 @@ export function ModuleChat({
     }
   }
 
+  const full = variant === "full";
+  const textSize = full ? "text-[15px]" : "text-sm";
+
   return (
-    <div className="flex h-[calc(100vh-8rem)] min-h-[520px] flex-col rounded-xl border border-gray-200 bg-white">
-      <div className="border-b border-gray-100 px-4 py-3">
-        <p className="text-sm font-semibold text-[#233242]">AI Tutor</p>
-        <p className="text-xs text-gray-400">Knows this module — ask anything about it</p>
+    <div
+      className={
+        full
+          ? "flex h-full min-h-[480px] flex-col bg-white"
+          : "flex h-[calc(100vh-8rem)] min-h-[520px] flex-col rounded-xl border border-gray-200 bg-white"
+      }
+    >
+      {!full && (
+        <div className="border-b border-gray-100 px-4 py-3">
+          <p className="text-sm font-semibold text-[#233242]">AI Tutor</p>
+          <p className="text-xs text-gray-400">Knows this module — ask anything about it</p>
+        </div>
+      )}
+
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-5">
+        <div className="mx-auto h-full w-full max-w-3xl space-y-5">
+          {messages.length === 0 && (
+            <div className="flex h-full flex-col items-center justify-center px-4 text-center">
+              <p className={`font-semibold text-[#233242] ${full ? "text-2xl" : "text-base"}`}>
+                What are you stuck on?
+              </p>
+              <p className={`mt-1 text-gray-400 ${full ? "text-base" : "text-sm"}`}>
+                Ask the tutor anything about this module.
+              </p>
+            </div>
+          )}
+          {messages.map((m, i) =>
+            m.role === "user" ? (
+              <div
+                key={i}
+                className={`ml-auto w-fit max-w-[85%] rounded-3xl bg-gray-100 px-4 py-2 whitespace-pre-wrap text-[#233242] ${textSize}`}
+              >
+                {m.content}
+              </div>
+            ) : (
+              <div key={i} className={`text-[#233242] ${textSize}`}>
+                {m.content ? (
+                  <Markdown text={m.content} />
+                ) : busy && i === messages.length - 1 ? (
+                  <span className="mt-1 inline-block h-3 w-3 animate-pulse rounded-full bg-gray-700" />
+                ) : null}
+              </div>
+            ),
+          )}
+        </div>
       </div>
 
-      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-4 py-5">
-        {messages.length === 0 && (
-          <div className="flex h-full flex-col items-center justify-center px-4 text-center">
-            <p className="text-base font-semibold text-[#233242]">What are you stuck on?</p>
-            <p className="mt-1 text-sm text-gray-400">Ask the tutor anything about this module.</p>
-          </div>
-        )}
-        {messages.map((m, i) =>
-          m.role === "user" ? (
-            <div
-              key={i}
-              className="ml-auto w-fit max-w-[85%] rounded-3xl bg-gray-100 px-4 py-2 text-sm whitespace-pre-wrap text-[#233242]"
-            >
-              {m.content}
-            </div>
-          ) : (
-            <div key={i} className="text-sm text-[#233242]">
-              {m.content ? (
-                <Markdown text={m.content} />
-              ) : busy && i === messages.length - 1 ? (
-                <span className="mt-1 inline-block h-3 w-3 animate-pulse rounded-full bg-gray-700" />
-              ) : null}
-            </div>
-          ),
-        )}
-      </div>
+      {error && <p className="mx-auto w-full max-w-3xl px-4 pb-1 text-xs text-red-600">{error}</p>}
 
-      {error && <p className="px-4 pb-1 text-xs text-red-600">{error}</p>}
-
-      <div className="p-3">
-        <div className="flex items-end gap-2 rounded-3xl border border-gray-300 px-4 py-2 transition-colors focus-within:border-gray-400">
+      <div className={full ? "px-4 pb-5" : "p-3"}>
+        <div className="mx-auto flex w-full max-w-3xl items-end gap-2 rounded-3xl border border-gray-300 px-4 py-2 shadow-sm transition-colors focus-within:border-gray-400">
           <textarea
             ref={textareaRef}
             value={input}
@@ -178,7 +199,7 @@ export function ModuleChat({
             }}
             rows={1}
             placeholder="Ask anything"
-            className="max-h-40 flex-1 resize-none bg-transparent py-1.5 text-sm text-[#233242] placeholder:text-gray-400 focus:outline-none"
+            className={`max-h-40 flex-1 resize-none bg-transparent py-1.5 text-[#233242] placeholder:text-gray-400 focus:outline-none ${textSize}`}
           />
           <button
             type="button"
