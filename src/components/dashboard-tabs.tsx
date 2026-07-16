@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type Tab = "courses" | "lectures" | "winners" | "notifications";
+type Tab = "courses" | "lectures" | "calendar" | "winners" | "notifications";
 
 export function DashboardTabs({ active, unreadCount }: { active: Tab; unreadCount: number }) {
   const tabClass = (tab: Tab) =>
@@ -17,6 +17,9 @@ export function DashboardTabs({ active, unreadCount }: { active: Tab; unreadCoun
       </Link>
       <Link href="/dashboard/lectures" className={tabClass("lectures")}>
         Lectures
+      </Link>
+      <Link href="/dashboard/calendar" className={tabClass("calendar")}>
+        Calendar
       </Link>
       <Link href="/dashboard/winners" className={tabClass("winners")}>
         Past Winners

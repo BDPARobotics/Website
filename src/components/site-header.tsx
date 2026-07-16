@@ -5,18 +5,45 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
+import { SignOutButton } from "@/components/sign-out-button";
 
-const NAV_LINKS = [
+const MARKETING_LINKS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/robot-arm-challenge", label: "Robot Arm Challenge" },
 ];
 
+// Signed-in students see the LMS nav instead of the marketing pages.
+const STUDENT_LINKS = [
+  { href: "/dashboard", label: "Modules" },
+  { href: "/dashboard/lectures", label: "Lectures" },
+  { href: "/dashboard/calendar", label: "Calendar" },
+  { href: "/dashboard/notifications", label: "Notifications" },
+  { href: "/dashboard/winners", label: "Winners" },
+];
+
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [authed, setAuthed] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => onAuthStateChanged(getFirebaseAuth(), (u) => setAuthed(!!u)), []);
+  useEffect(
+    () =>
+      onAuthStateChanged(getFirebaseAuth(), async (u) => {
+        setAuthed(!!u);
+        if (!u) {
+          setIsAdmin(false);
+          return;
+        }
+        const token = await u.getIdTokenResult();
+        setIsAdmin(token.claims.role === "admin");
+      }),
+    [],
+  );
+
+  const navLinks = authed
+    ? [...STUDENT_LINKS, ...(isAdmin ? [{ href: "/admin", label: "Admin" }] : [])]
+    : MARKETING_LINKS;
 
   return (
     <header className="bg-tertiary sticky top-0 z-50">
@@ -33,7 +60,7 @@ export function SiteHeader() {
         </Link>
 
         <ul className="hidden items-center gap-8 xl:flex">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
@@ -47,12 +74,7 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-3 xl:flex">
           {authed ? (
-            <Link
-              href="/dashboard"
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
-            >
-              Dashboard
-            </Link>
+            <SignOutButton />
           ) : (
             <>
               <Link
@@ -100,7 +122,7 @@ export function SiteHeader() {
       {open && (
         <div id="mobile-menu" className="border-t border-[#233242]/10 xl:hidden">
           <ul className="container mx-auto flex flex-col gap-1 px-4 py-3 sm:px-6">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
@@ -114,13 +136,7 @@ export function SiteHeader() {
           </ul>
           <div className="container mx-auto flex gap-3 px-4 pb-4 sm:px-6">
             {authed ? (
-              <Link
-                href="/dashboard"
-                onClick={() => setOpen(false)}
-                className="flex-1 rounded-md bg-primary px-4 py-2 text-center text-sm font-medium text-white"
-              >
-                Dashboard
-              </Link>
+              <SignOutButton />
             ) : (
               <>
                 <Link
