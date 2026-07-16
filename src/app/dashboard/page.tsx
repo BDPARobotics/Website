@@ -69,13 +69,10 @@ export default async function DashboardPage() {
     }),
   );
 
-  // The banner's deep link: the first arm challenge the student hasn't
-  // finished, falling back to the first one overall.
+  // All challenge questions, surfaced in the banner as clickable cards.
   const armChallenges = courses.flatMap((c) =>
     (modulesByCourse.get(c.id) ?? []).filter((m) => m.type === "arm_challenge"),
   );
-  const nextChallenge =
-    armChallenges.find((m) => progressByModule.get(m.id) !== "completed") ?? armChallenges[0];
 
   return (
     <main className="container mx-auto px-4 py-16 sm:px-6">
@@ -103,29 +100,52 @@ export default async function DashboardPage() {
 
       <DashboardTabs active="courses" unreadCount={unreadCount} />
 
-      {nextChallenge && (
-        <Link
-          href={`/dashboard/modules/${nextChallenge.id}`}
-          className="group mt-8 block overflow-hidden rounded-2xl bg-[#233242] p-6 sm:p-8"
-        >
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <div className="min-w-0">
-              <p className="text-xs font-bold tracking-widest text-[#51b56d] uppercase">
-                Robot Arm Challenge
-              </p>
-              <h2 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
-                {nextChallenge.title}
-              </h2>
-              <p className="mt-2 max-w-xl text-sm text-white/70">
-                Read the challenge question and work through it with your AI tutor — right in
-                your browser.
-              </p>
-            </div>
-            <span className="shrink-0 rounded-md bg-primary px-6 py-3 text-base font-bold text-white transition-colors group-hover:bg-primary-hover">
-              Enter the Challenge →
-            </span>
+      {armChallenges.length > 0 && (
+        <section className="mt-8 rounded-2xl bg-[#233242] p-6 sm:p-8">
+          <p className="text-xs font-bold tracking-widest text-[#51b56d] uppercase">
+            Robot Arm Challenge
+          </p>
+          <div className="mt-2 flex flex-wrap items-end justify-between gap-x-6 gap-y-1">
+            <h2 className="text-2xl font-bold text-white sm:text-3xl">Pick your challenge</h2>
+            <p className="text-sm text-white/70">
+              Read the question, then work through it with your AI tutor.
+            </p>
           </div>
-        </Link>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {armChallenges.map((m) => {
+              const status = progressByModule.get(m.id) ?? "not_started";
+              const preview = modulePreview(m);
+              return (
+                <Link
+                  key={m.id}
+                  href={`/dashboard/modules/${m.id}`}
+                  className="group flex flex-col rounded-xl bg-white/10 p-4 transition-colors hover:bg-white/20"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-bold text-white">
+                      {m.title.replace(/^Challenge:\s*/, "")}
+                    </h3>
+                    {status === "completed" ? (
+                      <span className="shrink-0 rounded-full bg-[#51b56d]/20 px-2 py-0.5 text-xs font-medium text-[#51b56d]">
+                        Done ✓
+                      </span>
+                    ) : status === "in_progress" ? (
+                      <span className="shrink-0 rounded-full bg-amber-400/20 px-2 py-0.5 text-xs font-medium text-amber-300">
+                        In progress
+                      </span>
+                    ) : null}
+                  </div>
+                  {preview && (
+                    <p className="mt-1.5 line-clamp-2 text-sm text-white/60">{preview}</p>
+                  )}
+                  <span className="mt-auto pt-3 text-sm font-semibold text-[#51b56d] group-hover:underline">
+                    Enter →
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
       )}
 
       <CalendarWidget events={events} />
